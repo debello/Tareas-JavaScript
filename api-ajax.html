@@ -14,102 +14,86 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js">
 </script>
 <script>
-$("#boton-usuarios").on("click", getUsers);
-$("#boton-usuario").on("click", getUser);
-//$("#select-albums").on("change", getAlbums);
+    $("#boton-usuarios").on("click", getUsers);
+    $("#boton-usuario").on("click", getUser);
 
-function getUsers() {
-    let buttonUsers = document.getElementById("lista-usuarios")
-    if(buttonUsers.firstChild) {
-        buttonUsers.innerHTML = ""
-    }
-    else {
-        $.ajax({
-            url: 'https://jsonplaceholder.typicode.com/users/',
-            success: function(respuesta) {
-            console.log(respuesta)
-            var listaUsuarios = $("#lista-usuarios");
-            $.each(respuesta, function(index, elemento) {
-                listaUsuarios.append(
-                    '<tr>'
-                +     '<td>' + elemento.name + '</td>'
-                + '</tr>'
-                );    
-            });
-            },
-            error: function() {
-            console.log("No se ha podido obtener la información Users");
-            }
-        });
-    }
-}
-
-function getUser() {
-    let buttonUser = document.getElementById("lista-usuario")
-    if(buttonUser.firstChild) {
-        buttonUser.innerHTML = ""
-    }
-    else {
-        let i = 1;
-        for(i; i < 11; i++){
+    function getUsers(){
+        let buttonUsers = document.getElementById("lista-usuarios")
+        if(buttonUsers.firstChild){
+            buttonUsers.innerHTML = ""
+        }
+        else {
             $.ajax({
-                async: false,
-                url: `https://jsonplaceholder.typicode.com/users/${i}`,
-                success: function(usuario){
-
-                    console.log(usuario)
-                    console.log(usuario.name)
-                    let listaUsuario = $("#lista-usuario")
-                    listaUsuario.append(
-                        // También se puede uno a uno: usuario.name, usuario.address, usuario.nickname... 
-                        '<p>' + JSON.stringify(usuario) + '</p>'
-                    );    
+                url: 'https://jsonplaceholder.typicode.com/users/',
+                success: function(respuesta){
+                    var listaUsuarios = $("#lista-usuarios");
+                    $.each(respuesta, function(index, elemento){
+                        listaUsuarios.append(
+                            '<tr>'
+                        +     '<td>' + elemento.name + '</td>'
+                        + '</tr>'
+                        );    
+                    });
                 },
-            error: function() {
+                error: function(){
+                console.log("No se ha podido obtener la información Users");
+                }
+            });
+        }
+    }
+
+    function getUser(){
+        let buttonUser = document.getElementById("lista-usuario")
+        if(buttonUser.firstChild){
+            buttonUser.innerHTML = ""
+        }
+        else {
+            let i = 1;
+            for(i; i < 11; i++){
+                $.ajax({
+                    url: `https://jsonplaceholder.typicode.com/users/${i}`,
+                    success: function(usuario){
+                        let listaUsuario = $("#lista-usuario")
+                        listaUsuario.append(
+                            // También se puede uno a uno: usuario.name, usuario.address, usuario.nickname... 
+                            '<p>' + JSON.stringify(usuario) + '</p>'
+                        );    
+                    },
+                error: function(){
+                    console.log("No se ha podido obtener la información User");
+                }
+                })
+            }
+        }
+    }
+
+    function getAlbums(){
+        $.ajax({
+            async: false,
+            url: 'https://jsonplaceholder.typicode.com/albums/',
+            success: function(albums){
+                let selectAlbums = $("#select-albums")
+                    // También se puede uno a uno: usuario.name, usuario.address, usuario.nickname... 
+                    albums.map( x => {
+                        selectAlbums.append(
+                            '<option value=' +x.id+ '>' +x.title+ '</p>'
+                        );    
+                    })
+            },
+            error: function(){
                 console.log("No se ha podido obtener la información User");
             }
-            })
-        }
-    }
-}
+        })
 
-function getAlbums(){
-     $.ajax({
-        async: false,
-        url: 'https://jsonplaceholder.typicode.com/albums/',
-        success: function(albums){
-            console.log(albums)
-            console.log(albums.length)
-            let selectAlbums = $("#select-albums")
-                // También se puede uno a uno: usuario.name, usuario.address, usuario.nickname... 
-                albums.map( x => {
-                    selectAlbums.append(
-                        '<option value='+x.id+'>' + x.title + '</p>'
-                    );    
-                })
-        }
-        ,
-        error: function() {
-            console.log("No se ha podido obtener la información User");
-        }
-    })
-    let options = document.getElementsByTagName("option")
-    let selectAlbums = $("#show-photos")
-    let showPhotos = document.getElementById("#show-photos")
-    for(let i = 0; i < options.length; i++){
-        options[i].addEventListener("click", function() {
-            //console.log(showPhotos.hasChildNodes())
-            if(selectAlbums.children.length > 1 ){
-                selectAlbums.innerHTML = ""
-
-            }
-            else {
+        let options = document.getElementsByTagName("option")
+        let selectAlbums = $("#show-photos")
+        for(let i = 0; i < options.length; i++){
+            options[i].addEventListener("click", function(){
                 $.ajax({
-                    async: false,
                     url: 'https://jsonplaceholder.typicode.com/photos/',
                     success: function(photos){
-                        console.log(photos)
                         let count = 0
+                        selectAlbums.empty()
                         for(let a = 0; a < photos.length; a++){
                             if(photos[a].albumId == options[i].value && count < 3){
                                 selectAlbums.append(
@@ -119,14 +103,13 @@ function getAlbums(){
                             }
                         }
                     },
-                    error: function() {
+                    error: function(){
                         console.log("Error al tratar de obtener 'Photos'")
                     }
                 })
-            }
-        })
+            })
+        }
     }
-}
-getAlbums();
+    getAlbums();
 </script>
 </HTML>
